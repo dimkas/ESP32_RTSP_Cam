@@ -55,8 +55,10 @@ void handle_jpg_stream(void)
 
     client.write((char *)cam.getfb(), cam.getSize());
     server.sendContent("\r\n");
-    if (!client.connected())
+    if (!client.connected()) {
+      cam.done();
       break;
+    }
   }
 }
 
@@ -65,8 +67,7 @@ void handle_jpg(void)
   setflash(1);
   WiFiClient client = server.client();
   cam.run();
-  if (!client.connected())
-  {
+  if (!client.connected()) {
     return;
   }
   String response = "HTTP/1.1 200 OK\r\n";
@@ -74,6 +75,7 @@ void handle_jpg(void)
   response += "Content-type: image/jpeg\r\n\r\n";
   server.sendContent(response);
   client.write((char *)cam.getfb(), cam.getSize());
+  cam.done();
   setflash(0);
 }
 
